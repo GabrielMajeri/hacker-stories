@@ -54,18 +54,20 @@ const App = () => {
 
   const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "React");
 
-  const handleSearch = (event) => {
+  const [url, setUrl] = useState(`${API_ENDPOINT}${searchTerm}`);
+
+  const handleSearchInput = (event) => {
     setSearchTerm(event.target.value);
   };
 
-  const fetchStories = useCallback(() => {
-    if (!searchTerm) {
-      return;
-    }
+  const handleSearchSubmit = () => {
+    setUrl(`${API_ENDPOINT}${searchTerm}`);
+  };
 
+  const fetchStories = useCallback(() => {
     dispatchStories({ type: "STORIES_FETCH_INIT" });
 
-    fetch(`${API_ENDPOINT}${searchTerm}`)
+    fetch(url)
       .then((response) => response.json())
       .then((result) => {
         dispatchStories({
@@ -74,7 +76,7 @@ const App = () => {
         });
       })
       .catch(() => dispatchStories({ type: "STORIES_FETCH_FAILURE" }));
-  }, [searchTerm]);
+  }, [url]);
 
   useEffect(() => {
     fetchStories();
@@ -94,12 +96,16 @@ const App = () => {
       <InputWithLabel
         id="search"
         search={searchTerm}
-        onChange={handleSearch}
+        onChange={handleSearchInput}
         value={searchTerm}
         isFocused
       >
         <strong>Search</strong>
       </InputWithLabel>
+
+      <button type="button" disabled={!searchTerm} onClick={handleSearchSubmit}>
+        Submit
+      </button>
 
       <hr />
 
