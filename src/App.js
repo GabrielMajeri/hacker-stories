@@ -30,8 +30,8 @@ const App = () => {
 
   const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "React");
 
-  const handleSearch = (query) => {
-    setSearchTerm(query);
+  const handleSearch = (event) => {
+    setSearchTerm(event.target.value);
   };
 
   const filteredStories = stories.filter((story) =>
@@ -42,7 +42,9 @@ const App = () => {
     <div>
       <h1>My Hacker Stories</h1>
 
-      <Search search={searchTerm} onSearch={handleSearch} />
+      <InputWithLabel id="search" search={searchTerm} onChange={handleSearch}>
+        <strong>Search</strong>
+      </InputWithLabel>
 
       <hr />
 
@@ -51,15 +53,12 @@ const App = () => {
   );
 };
 
-const Search = ({ search, onSearch }) => {
-  const handleChange = (event) => {
-    onSearch(event.target.value);
-  };
-
+const InputWithLabel = ({ id, children, value, type = "text", onChange }) => {
   return (
     <>
-      <label htmlFor="search">Search: </label>
-      <input id="search" type="text" onChange={handleChange} value={search} />
+      <label htmlFor={id}>{children}</label>
+      &nbsp;
+      <input id={id} type={type} onChange={onChange} value={value} />
     </>
   );
 };
