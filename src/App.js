@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 const useSemiPersistentState = (key, initialState = "") => {
   const [value, setValue] = useState(localStorage.getItem(key) || initialState);
@@ -42,7 +42,12 @@ const App = () => {
     <div>
       <h1>My Hacker Stories</h1>
 
-      <InputWithLabel id="search" search={searchTerm} onChange={handleSearch}>
+      <InputWithLabel
+        id="search"
+        search={searchTerm}
+        onChange={handleSearch}
+        isFocused
+      >
         <strong>Search</strong>
       </InputWithLabel>
 
@@ -53,12 +58,34 @@ const App = () => {
   );
 };
 
-const InputWithLabel = ({ id, children, value, type = "text", onChange }) => {
+const InputWithLabel = ({
+  id,
+  children,
+  value,
+  type = "text",
+  onChange,
+  isFocused,
+}) => {
+  const inputRef = useRef();
+
+  useEffect(() => {
+    if (isFocused && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isFocused]);
+
   return (
     <>
       <label htmlFor={id}>{children}</label>
       &nbsp;
-      <input id={id} type={type} onChange={onChange} value={value} />
+      <input
+        ref={inputRef}
+        id={id}
+        type={type}
+        onChange={onChange}
+        autoFocus={isFocused}
+        value={value}
+      />
     </>
   );
 };
