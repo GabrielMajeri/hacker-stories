@@ -60,8 +60,9 @@ const App = () => {
     setSearchTerm(event.target.value);
   };
 
-  const handleSearchSubmit = () => {
+  const handleSearchSubmit = (event) => {
     setUrl(`${API_ENDPOINT}${searchTerm}`);
+    event.preventDefault();
   };
 
   const fetchStories = useCallback(async () => {
@@ -94,19 +95,11 @@ const App = () => {
     <div>
       <h1>My Hacker Stories</h1>
 
-      <InputWithLabel
-        id="search"
-        search={searchTerm}
-        onChange={handleSearchInput}
-        value={searchTerm}
-        isFocused
-      >
-        <strong>Search</strong>
-      </InputWithLabel>
-
-      <button type="button" disabled={!searchTerm} onClick={handleSearchSubmit}>
-        Submit
-      </button>
+      <SearchForm
+        searchTerm={searchTerm}
+        onSearchInput={handleSearchInput}
+        onSearchSubmit={handleSearchSubmit}
+      />
 
       <hr />
 
@@ -120,6 +113,22 @@ const App = () => {
     </div>
   );
 };
+
+const SearchForm = ({ searchTerm, onSearchInput, onSearchSubmit }) => (
+  <form onSubmit={onSearchSubmit}>
+    <InputWithLabel
+      id="search"
+      search={searchTerm}
+      onChange={onSearchInput}
+      value={searchTerm}
+      isFocused
+    >
+      <strong>Search</strong>
+    </InputWithLabel>
+
+    <button disabled={!searchTerm}>Submit</button>
+  </form>
+);
 
 const InputWithLabel = ({
   id,
