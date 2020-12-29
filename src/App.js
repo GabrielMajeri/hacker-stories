@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useReducer } from "react";
+import { useEffect, useState, useRef, useReducer, useCallback } from "react";
 
 const useSemiPersistentState = (key, initialState = "") => {
   const savedState = localStorage.getItem(key);
@@ -37,7 +37,10 @@ const App = () => {
         };
       case "REMOVE_STORY":
         const item = action.payload;
-        return state.filter((story) => story.objectID !== item.objectID);
+        return {
+          ...state,
+          data: state.data.filter((story) => story.objectID !== item.objectID),
+        };
       default:
         throw new Error(`Unknown action type "${action.type}"`);
     }
@@ -55,7 +58,7 @@ const App = () => {
     setSearchTerm(event.target.value);
   };
 
-  useEffect(() => {
+  const fetchStories = useCallback(() => {
     if (!searchTerm) {
       return;
     }
@@ -72,6 +75,10 @@ const App = () => {
       })
       .catch(() => dispatchStories({ type: "STORIES_FETCH_FAILURE" }));
   }, [searchTerm]);
+
+  useEffect(() => {
+    fetchStories();
+  }, [fetchStories]);
 
   const handleRemoveItem = (item) => {
     dispatchStories({
