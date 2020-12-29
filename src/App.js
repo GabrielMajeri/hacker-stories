@@ -1,7 +1,10 @@
 import { useEffect, useState, useRef } from "react";
 
 const useSemiPersistentState = (key, initialState = "") => {
-  const [value, setValue] = useState(localStorage.getItem(key) || initialState);
+  const savedState = localStorage.getItem(key);
+  const [value, setValue] = useState(
+    savedState !== null ? savedState : initialState
+  );
 
   useEffect(() => localStorage.setItem(key, value), [key, value]);
 
@@ -46,6 +49,7 @@ const App = () => {
         id="search"
         search={searchTerm}
         onChange={handleSearch}
+        value={searchTerm}
         isFocused
       >
         <strong>Search</strong>
